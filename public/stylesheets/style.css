@@ -1,0 +1,19 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.sidebar-nav {
+  margin: 100px 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.sidebar-nav li {
+  margin: 20px 0;
+}
+
+.sidebar-nav a {
+  text-decoration: none;
+}
