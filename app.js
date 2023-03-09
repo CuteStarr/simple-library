@@ -1,21 +1,25 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const catalogRouter = require('./routes/catalog');
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+const catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
 
-const app = express();
+const compression = require('compression');
+const helmet = require('helmet');
 
-app.use(helmet());
+var app = express();
 
+// Set up mongoose connection
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
-//const mongoDB = "mongodb+srv://cutewolf:charming@cluster0.q6vqkil.mongodb.net/local_library?retryWrites=true&w=majority";
-const mongoDB = "mongodb://127.0.0.1:27017/my_database";
+
+//const dev_db_url = 'mongodb+srv://cooluser:coolpassword@cluster0.lz91hw2.mongodb.net/local_library?retryWrites=true&w=majority';
+const dev_db_url = 'mongodb://127.0.0.1:27017/my_database';
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 main().catch(err => console.log(err));
 async function main() {
@@ -30,12 +34,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(compression());
+app.use(helmet());
+app.use(compression()); // Compress all routes
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/catalog', catalogRouter);
+app.use('/catalog', catalogRouter);  // Add catalog routes to middleware chain.
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
